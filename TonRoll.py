@@ -38,7 +38,7 @@ class TonRoll:
 		self.operationName = "getMe"
 		return self.__send_request()
 
-	def GetWalletTransactionList(self):
+	def getWalletTransactionList(self):
 		self.operationName = "GetWalletTransactionList"
 		return self.__send_request()
 
@@ -66,31 +66,31 @@ class TonRoll:
 		self.operationName = "endMinesGame"
 		return self.__send_request()
 
-	def GetMinesGamesFairness(self):
+	def getMinesGamesFairness(self):
 		self.operationName = "GetMinesGamesFairness"
 		return self.__send_request()
 
-	def GetOverallGamesLog(self, type: str):
+	def getOverallGamesLog(self, type: str):
 		self.operationName = "GetOverallGamesLog"
 		return self.__send_request({'type' : type})
 
-	def PlayDuckFlipGame(self, chosenSide: str, amount: int | float, currency: str):
+	def playDuckFlipGame(self, chosenSide: str, amount: int | float, currency: str):
 		self.operationName = "PlayDuckFlipGame"
 		return self.__send_request({'chosenSide' : chosenSide, 'amount' : amount, 'currency' : currency})
 
-	def GetDuckFlipGame(self, currency: str):
+	def getDuckFlipGame(self, currency: str):
 		self.operationName = "GetDuckFlipGame"
 		return self.__send_request({'currency' : currency})
 
-	def GetDuckFlipGameLastResults(self):
+	def getDuckFlipGameLastResults(self):
 		self.operationName = "GetDuckFlipGameLastResults"
 		return self.__send_request()
 
-	def GetDuckFlipGameFairness(self):
+	def getDuckFlipGameFairness(self):
 		self.operationName = "GetDuckFlipGameFairness"
 		return self.__send_request()
 
-	def GetChatRoom(self):
+	def getChatRoom(self):
 		self.operationName = "GetChatRoom"
 		return self.__send_request()
 
@@ -98,7 +98,7 @@ class TonRoll:
 		self.operationName = "sendMessageToChatRoom"
 		return self.__send_request({'content' : content})
 
-	def ReactToMessageInChatRoom(self, messageId: str, content: str):
+	def reactToMessageInChatRoom(self, messageId: str, content: str):
 		self.operationName = "ReactToMessageInChatRoom"
 		return self.__send_request({'messageId' : messageId, 'content' : content})
 
