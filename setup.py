@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='tonroll',
     version='1.0.0',
-    description='A library for handling tonrolling',
+    description='A simple lib for calling TonRoll API methods',
     packages=find_packages(),
     author='Rude',
     author_email='rude.rudevich@mail.ru',
