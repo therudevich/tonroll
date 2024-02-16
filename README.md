@@ -12,5 +12,12 @@
 
 You can get your access token on [ tonroll.com](https://tonroll.com) > DevTools > Application > Cookies (https://tonroll.com) > access
 
+<h2>Using examples</h2>
+
+```
+me = tonroll.getMe()
+myBalance = me['data']['me']['balance'] # {'ton' : ..., 'demo' : ...}
+  
+``` 
 
 
