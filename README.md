@@ -1,3 +1,7 @@
+<h2>Installing</h2>
+
+```git clone https://github.com/therudevich/tonroll.git```
+
 <h2>Importing</h2>
 
 ```from tonroll import TonRoll```
