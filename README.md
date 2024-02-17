@@ -28,4 +28,15 @@ tonroll.activatePromocode('promocode')
 
 ``` 
 
+<h3>Handlers</h3>
+
+```
+@tonroll.rollNewGameHadler()    # handler for new roll game
+def new_roll_game(msg):
+  ...
+
+@tonroll.rollGameStartHandler()    # handler for roll game ends getting bets and starts
+def roll_game_starts(msg):
+  ...
+```
 
