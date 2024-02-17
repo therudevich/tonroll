@@ -34,6 +34,14 @@ class TonRoll:
 		)
 		return responce.json()
 
+	def getServerTime(self):
+		self.operationName = "GetServerTime"
+		return self.__send_request()
+
+	def getMainWalletInfo(self):
+		self.operationName = "getMainWalletInfo"
+		return self.__send_request()
+
 	def getMe(self):
 		self.operationName = "getMe"
 		return self.__send_request()
