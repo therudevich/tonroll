@@ -9,6 +9,7 @@ from .queries import queries, socket_queries
 
 class TonRoll:
 	API_URL = "https://tonroll.com/api"
+	BET = 10
 	SOCKETS_URI = "wss://tonroll.com/sockets"
 	AVAILABLE_CURRENCIES = ['ton', 'demo']
 	AVAILABLE_ROLL_CHOICES = ['blue', 'green', 'red']
@@ -290,46 +291,46 @@ class TonRoll:
 
 
 	async def __run_connection(self):
-		while True:
-			try:
-				async with websockets.connect(self.SOCKETS_URI, subprotocols=['graphql-transport-ws'], extra_headers=self.headers) as websocket:
-					await websocket.send(json.dumps({"type": "connection_init"}))
-					await asyncio.sleep(1)
-					for _id in self.subscriptions.keys():
-						request_data_list = self.subscriptions[_id]
-						for request_data in request_data_list:
-							if not request_data['subscription_exists']:
-								message = {
-									"id" : _id, 
-									"payload" : {
-										"variables" : request_data['variables'],
-										"extensions" : request_data['extensions'],
-										"query" : request_data['query'],
-										"operationName" : request_data['operationName']
-									},
-									"type" : "subscribe"
-								}
+		async with websockets.connect(self.SOCKETS_URI, subprotocols=['graphql-transport-ws'], extra_headers=self.headers) as websocket:
+			await websocket.send(json.dumps({"type": "connection_init"}))
+			await asyncio.sleep(1)
+			for _id in self.subscriptions.keys():
+				request_data_list = self.subscriptions[_id]
+				for request_data in request_data_list:
+					if not request_data['subscription_exists']:
+						message = {
+							"id" : _id, 
+							"payload" : {
+								"variables" : request_data['variables'],
+								"extensions" : request_data['extensions'],
+								"query" : request_data['query'],
+								"operationName" : request_data['operationName']
+							},
+							"type" : "subscribe"
+						}
 
-								await websocket.send(json.dumps(message))
+						await websocket.send(json.dumps(message))
 
-					async for message in websocket:
-						data = json.loads(message)
-						_id = data.get('id')
-						subscriptions = self.subscriptions.get(_id)
+			async for message in websocket:
+				data = json.loads(message)
+				_id = data.get('id')
+				subscriptions = self.subscriptions.get(_id)
+				typename = data
+				if subscriptions:
+					for subscription in subscriptions:
+						for path in subscription['path']:
+							typename = typename[path]
+						if typename == subscription['typename']:
+							subscription['func'](data['payload']['data'])
 						typename = data
-						if subscriptions:
-							for subscription in subscriptions:
-								for path in subscription['path']:
-									typename = typename[path]
-								if typename == subscription['typename']:
-									subscription['func'](data['payload']['data'])
-								typename = data
-			except:
-				await asyncio.sleep(1)
 
 
 	def run(self):
-		asyncio.run(self.__run_connection())
+		while True:
+			try:
+				asyncio.run(self.__run_connection())
+			except:
+				pass
 
 
 
