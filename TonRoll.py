@@ -1,8 +1,15 @@
+import websockets
+import functools
 import requests
-from .queries import queries
+import json
+import asyncio
+
+from .queries import queries, socket_queries
+
 
 class TonRoll:
 	API_URL = "https://tonroll.com/api"
+	SOCKETS_URI = "wss://tonroll.com/sockets"
 	AVAILABLE_CURRENCIES = ['ton', 'demo']
 	AVAILABLE_ROLL_CHOICES = ['blue', 'green', 'red']
 	OVERALL_GAMES_LOG_TYPES = ['AllGames', 'MyGames', 'HightRollers', 'BigWins', 'DuckFlipGame']
@@ -18,6 +25,8 @@ class TonRoll:
 						 '🙏' : 'pray', 
 						 '💩' : 'shit',
 						 '😭' : 'sob'}
+
+	subscriptions = {}
 
 	def __init__(self, token: str | None = None):
 		self.headers = None if not token else {
@@ -117,6 +126,174 @@ class TonRoll:
 	def activatePromocode(self, code: str):
 		self.operationName = "activatePromocode"
 		return self.__send_request({'code' : code})
+
+
+	@classmethod
+	def rollGameStartHandler(cls):
+		def decorator(func):
+			event_id = "677214fe-d27f-4ba3-9176-11b0387c314b"
+			query = socket_queries['onRollGameUpdate']
+			variables = {}
+			extensions = {}
+			operationName = "onRollGameUpdate"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({'func' : func, 
+												'query' : query, 
+												'variables' : variables, 
+												'extensions' : extensions, 
+												'operationName' : operationName, 
+												'path' : ['payload', 'data', 'game', '__typename'], 
+												'typename' : 'RollGameStart'})
+
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+
+	@classmethod
+	def rollNewGameHadler(cls):
+		def decorator(func):
+			event_id = "677214fe-d27f-4ba3-9176-11b0387c314b"
+			query = socket_queries['onRollGameUpdate']
+			variables = {}
+			extensions = {}
+			operationName = "onRollGameUpdate"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({'func' : func, 
+												'query' : query, 
+												'variables' : variables, 
+												'extensions' : extensions, 
+												'operationName' : operationName, 
+												'path' : ['payload', 'data', 'game', '__typename'], 
+												'typename' : 'RollGameNewGame'})
+
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+	@classmethod
+	def rollGamesResultHistoryHandler(cls):
+		def decorator(func):
+			event_id = "5bce8c9f-de59-4458-ae09-551a9997ac8a"
+			query = socket_queries['onRollGamesResultHistoryUpdate']
+			variables = {}
+			extensions = {}
+			operationName = "onRollGamesResultHistoryUpdate"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({'func' : func, 
+												'query' : query, 
+												'variables' : variables, 
+												'extensions' : extensions, 
+												'operationName' : operationName, 
+												'path' : ['payload', 'data', 'resultHistory', '__typename'], 
+												'typename' : 'RollGamesResultHistory'})
+
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+	@classmethod
+	def chatNewMessageHandler(cls):
+		def decorator(func):
+			event_id = "a848b99d-3e47-4618-9409-216bdbcd82ac"
+			query = socket_queries['OnEventInChatRoom']
+			variables = {}
+			extensions = {}
+			operationName = "OnEventInChatRoom"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({'func' : func,
+												'query' : query,
+												'variables' : variables,
+												'extensions' : extensions,
+												'operationName' : operationName,
+												'path' : ['payload', 'data', 'chat', 'name'],
+												'typename' : 'newMessage'
+
+				})
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+
+	@classmethod
+	def onlineChangedHandler(cls):
+		def decorator(func):
+			event_id = "a848b99d-3e47-4618-9409-216bdbcd82ac"
+			query = socket_queries['OnEventInChatRoom']
+			variables = {}
+			extensions = {}
+			operationName = "OnEventInChatRoom"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({'func' : func,
+												'query' : query,
+												'variables' : variables,
+												'extensions' : extensions,
+												'operationName' : operationName,
+												'path' : ['payload', 'data', 'chat', 'name'],
+												'typename' : 'onlineChanged'
+
+				})
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+
+	async def __run_connection(self):
+		async with websockets.connect(self.SOCKETS_URI, subprotocols=['graphql-transport-ws'], extra_headers=self.headers) as websocket:
+			await websocket.send(json.dumps({"type": "connection_init"}))
+			await asyncio.sleep(1)
+			for _id in self.subscriptions.keys():
+				request_data_list = self.subscriptions[_id]
+				for request_data in request_data_list:
+					message = {
+						"id" : _id, 
+						"payload" : {
+							"variables" : request_data['variables'],
+							"extensions" : request_data['extensions'],
+							"query" : request_data['query'],
+							"operationName" : request_data['operationName']
+						},
+						"type" : "subscribe"
+					}
+					await websocket.send(json.dumps(message))
+
+			async for message in websocket:
+				data = json.loads(message)
+				_id = data.get('id')
+				subscriptions = self.subscriptions.get(_id)
+				typename = data
+				if subscriptions:
+					for subscription in subscriptions:
+						for path in subscription['path']:
+							typename = typename[path]
+						if typename == subscription['typename']:
+							subscription['func'](data)
+
+
+	def run(self):
+		asyncio.run(self.__run_connection())
+
+
 
 
 
