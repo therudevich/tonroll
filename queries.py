@@ -19,4 +19,5 @@ queries = {
 	'ReactToMessageInChatRoom' : "mutation ReactToMessageInChatRoom($messageId: ObjectId!, $content: String!) {\n  reactToMessageInChatRoom(messageId: $messageId, content: $content)\n}",
 	'GetServerTime' : "query GetServerTime {\n  getServerTime\n}",
 	'getMainWalletInfo' : "query getMainWalletInfo {\n  getMainWalletInfo {\n    balance {\n      ton\n      dollar\n      __typename\n    }\n    address\n    __typename\n  }\n}",
+	'activatePromocode' : "mutation activatePromocode($code: String!) {\n  activatePromocode(code: $code) {\n    amount\n    type\n    __typename\n  }\n}",
 }
