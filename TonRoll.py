@@ -136,8 +136,10 @@ class TonRoll:
 			variables = {}
 			extensions = {}
 			operationName = "onRollGameUpdate"
+			subscription_exists = True
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
+				subscription_exists = False
 
 			cls.subscriptions[event_id].append({
 				'func' : func, 
@@ -145,6 +147,7 @@ class TonRoll:
 				'variables' : variables, 
 				'extensions' : extensions, 
 				'operationName' : operationName, 
+				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'game', '__typename'], 
 				'typename' : 'RollGameStart'
 			})
@@ -164,7 +167,9 @@ class TonRoll:
 			variables = {}
 			extensions = {}
 			operationName = "onRollGameUpdate"
+			subscription_exists = True
 			if event_id not in cls.subscriptions:
+				subscription_exists = False
 				cls.subscriptions[event_id] = []
 
 			cls.subscriptions[event_id].append({
@@ -173,6 +178,7 @@ class TonRoll:
 				'variables' : variables, 
 				'extensions' : extensions, 
 				'operationName' : operationName, 
+				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'game', '__typename'], 
 				'typename' : 'RollGameNewGame'
 			})
@@ -190,8 +196,10 @@ class TonRoll:
 			query = socket_queries['onRollGamesResultHistoryUpdate']
 			variables = {}
 			extensions = {}
+			subscription_exists = True
 			operationName = "onRollGamesResultHistoryUpdate"
 			if event_id not in cls.subscriptions:
+				subscription_exists = False
 				cls.subscriptions[event_id] = []
 
 			cls.subscriptions[event_id].append({
@@ -200,6 +208,7 @@ class TonRoll:
 				'variables' : variables, 
 				'extensions' : extensions, 
 				'operationName' : operationName, 
+				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'resultHistory', '__typename'], 
 				'typename' : 'RollGamesResultHistory'
 			})
@@ -217,8 +226,10 @@ class TonRoll:
 			query = socket_queries['OnEventInChatRoom']
 			variables = {}
 			extensions = {}
+			subscription_exists = True
 			operationName = "OnEventInChatRoom"
 			if event_id not in cls.subscriptions:
+				subscription_exists = False
 				cls.subscriptions[event_id] = []
 
 			cls.subscriptions[event_id].append({
@@ -227,6 +238,7 @@ class TonRoll:
 				'variables' : variables,
 				'extensions' : extensions,
 				'operationName' : operationName,
+				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'chat', 'name'],
 				'typename' : 'newMessage'
 			})
@@ -245,8 +257,10 @@ class TonRoll:
 			query = socket_queries['OnEventInChatRoom']
 			variables = {}
 			extensions = {}
+			subscription_exists = True
 			operationName = "OnEventInChatRoom"
 			if event_id not in cls.subscriptions:
+				subscription_exists = False
 				cls.subscriptions[event_id] = []
 
 			cls.subscriptions[event_id].append({
@@ -255,6 +269,7 @@ class TonRoll:
 				'variables' : variables,
 				'extensions' : extensions,
 				'operationName' : operationName,
+				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'chat', 'name'],
 				'typename' : 'onlineChanged'
 			})
@@ -273,17 +288,19 @@ class TonRoll:
 			for _id in self.subscriptions.keys():
 				request_data_list = self.subscriptions[_id]
 				for request_data in request_data_list:
-					message = {
-						"id" : _id, 
-						"payload" : {
-							"variables" : request_data['variables'],
-							"extensions" : request_data['extensions'],
-							"query" : request_data['query'],
-							"operationName" : request_data['operationName']
-						},
-						"type" : "subscribe"
-					}
-					await websocket.send(json.dumps(message))
+					if not request_data['subscription_exists']:
+						message = {
+							"id" : _id, 
+							"payload" : {
+								"variables" : request_data['variables'],
+								"extensions" : request_data['extensions'],
+								"query" : request_data['query'],
+								"operationName" : request_data['operationName']
+							},
+							"type" : "subscribe"
+						}
+
+						await websocket.send(json.dumps(message))
 
 			async for message in websocket:
 				data = json.loads(message)
@@ -295,7 +312,8 @@ class TonRoll:
 						for path in subscription['path']:
 							typename = typename[path]
 						if typename == subscription['typename']:
-							subscription['func'](data)
+							subscription['func'](data['payload']['data'])
+						typename = data
 
 
 	def run(self):
