@@ -139,13 +139,15 @@ class TonRoll:
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
 
-			cls.subscriptions[event_id].append({'func' : func, 
-												'query' : query, 
-												'variables' : variables, 
-												'extensions' : extensions, 
-												'operationName' : operationName, 
-												'path' : ['payload', 'data', 'game', '__typename'], 
-												'typename' : 'RollGameStart'})
+			cls.subscriptions[event_id].append({
+				'func' : func, 
+				'query' : query, 
+				'variables' : variables, 
+				'extensions' : extensions, 
+				'operationName' : operationName, 
+				'path' : ['payload', 'data', 'game', '__typename'], 
+				'typename' : 'RollGameStart'
+			})
 
 			@functools.wraps(func)
 			async def wrapper(*args, **kwargs):
@@ -165,13 +167,15 @@ class TonRoll:
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
 
-			cls.subscriptions[event_id].append({'func' : func, 
-												'query' : query, 
-												'variables' : variables, 
-												'extensions' : extensions, 
-												'operationName' : operationName, 
-												'path' : ['payload', 'data', 'game', '__typename'], 
-												'typename' : 'RollGameNewGame'})
+			cls.subscriptions[event_id].append({
+				'func' : func, 
+				'query' : query, 
+				'variables' : variables, 
+				'extensions' : extensions, 
+				'operationName' : operationName, 
+				'path' : ['payload', 'data', 'game', '__typename'], 
+				'typename' : 'RollGameNewGame'
+			})
 
 			@functools.wraps(func)
 			async def wrapper(*args, **kwargs):
@@ -190,13 +194,15 @@ class TonRoll:
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
 
-			cls.subscriptions[event_id].append({'func' : func, 
-												'query' : query, 
-												'variables' : variables, 
-												'extensions' : extensions, 
-												'operationName' : operationName, 
-												'path' : ['payload', 'data', 'resultHistory', '__typename'], 
-												'typename' : 'RollGamesResultHistory'})
+			cls.subscriptions[event_id].append({
+				'func' : func, 
+				'query' : query, 
+				'variables' : variables, 
+				'extensions' : extensions, 
+				'operationName' : operationName, 
+				'path' : ['payload', 'data', 'resultHistory', '__typename'], 
+				'typename' : 'RollGamesResultHistory'
+			})
 
 			@functools.wraps(func)
 			async def wrapper(*args, **kwargs):
@@ -215,15 +221,16 @@ class TonRoll:
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
 
-			cls.subscriptions[event_id].append({'func' : func,
-												'query' : query,
-												'variables' : variables,
-												'extensions' : extensions,
-												'operationName' : operationName,
-												'path' : ['payload', 'data', 'chat', 'name'],
-												'typename' : 'newMessage'
+			cls.subscriptions[event_id].append({
+				'func' : func,
+				'query' : query,
+				'variables' : variables,
+				'extensions' : extensions,
+				'operationName' : operationName,
+				'path' : ['payload', 'data', 'chat', 'name'],
+				'typename' : 'newMessage'
+			})
 
-				})
 			@functools.wraps(func)
 			async def wrapper(*args, **kwargs):
 				return await func(*args, **kwargs)
@@ -242,15 +249,16 @@ class TonRoll:
 			if event_id not in cls.subscriptions:
 				cls.subscriptions[event_id] = []
 
-			cls.subscriptions[event_id].append({'func' : func,
-												'query' : query,
-												'variables' : variables,
-												'extensions' : extensions,
-												'operationName' : operationName,
-												'path' : ['payload', 'data', 'chat', 'name'],
-												'typename' : 'onlineChanged'
+			cls.subscriptions[event_id].append({
+				'func' : func,
+				'query' : query,
+				'variables' : variables,
+				'extensions' : extensions,
+				'operationName' : operationName,
+				'path' : ['payload', 'data', 'chat', 'name'],
+				'typename' : 'onlineChanged'
+			})
 
-				})
 			@functools.wraps(func)
 			async def wrapper(*args, **kwargs):
 				return await func(*args, **kwargs)
