@@ -110,5 +110,9 @@ class TonRoll:
 		self.operationName = "ReactToMessageInChatRoom"
 		return self.__send_request({'messageId' : messageId, 'content' : content})
 
+	def activatePromocode(self, code: str):
+		self.operationName = "activatePromocode"
+		return self.__send_request({'code' : code})
+
 
 
