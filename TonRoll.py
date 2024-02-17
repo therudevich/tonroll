@@ -9,7 +9,6 @@ from .queries import queries, socket_queries
 
 class TonRoll:
 	API_URL = "https://tonroll.com/api"
-	BET = 10
 	SOCKETS_URI = "wss://tonroll.com/sockets"
 	AVAILABLE_CURRENCIES = ['ton', 'demo']
 	AVAILABLE_ROLL_CHOICES = ['blue', 'green', 'red']
