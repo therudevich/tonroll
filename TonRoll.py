@@ -55,6 +55,10 @@ class TonRoll:
 		self.operationName = "getMe"
 		return self.__send_request()
 
+	def getDemoBalance(self):
+		self.operationName = "GetDemoBalance"
+		return self.__send_request()
+		
 	def getMyAuth(self):
 		self.operationName = "getMyAuth"
 		return self.__send_request()
