@@ -20,7 +20,7 @@ class TonRoll:
 						 '😭' : 'sob'}
 
 	def __init__(self, token: str | None = None):
-		self.headers = {
+		self.headers = None if not token else {
 			"Cookie" : "access={};refresh={}".format(token, token)
 		}
 		self.operationName = None
