@@ -157,7 +157,8 @@ class TonRoll:
 				'operationName' : operationName, 
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'game', '__typename'], 
-				'typename' : 'RollGameStart'
+				'typename' : 'RollGameStart',
+				'type' : 'subscribe'
 			})
 
 			@functools.wraps(func)
@@ -188,7 +189,8 @@ class TonRoll:
 				'operationName' : operationName, 
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'game', '__typename'], 
-				'typename' : 'RollGameNewGame'
+				'typename' : 'RollGameNewGame',
+				'type' : 'subscribe'
 			})
 
 			@functools.wraps(func)
@@ -218,7 +220,8 @@ class TonRoll:
 				'operationName' : operationName, 
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'resultHistory', '__typename'], 
-				'typename' : 'RollGamesResultHistory'
+				'typename' : 'RollGamesResultHistory',
+				'type' : 'subscribe'
 			})
 
 			@functools.wraps(func)
@@ -248,7 +251,8 @@ class TonRoll:
 				'operationName' : operationName,
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'chat', 'name'],
-				'typename' : 'newMessage'
+				'typename' : 'newMessage',
+				'type' : 'subscribe'
 			})
 
 			@functools.wraps(func)
@@ -279,7 +283,8 @@ class TonRoll:
 				'operationName' : operationName,
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'chat', 'name'],
-				'typename' : 'onlineChanged'
+				'typename' : 'onlineChanged',
+				'type' : 'subscribe'
 			})
 
 			@functools.wraps(func)
@@ -305,7 +310,7 @@ class TonRoll:
 								"query" : request_data['query'],
 								"operationName" : request_data['operationName']
 							},
-							"type" : "subscribe"
+							"type" : request_data['type']
 						}
 
 						await websocket.send(json.dumps(message))
@@ -330,8 +335,3 @@ class TonRoll:
 				asyncio.run(self.__run_connection())
 			except:
 				pass
-
-
-
-
-
