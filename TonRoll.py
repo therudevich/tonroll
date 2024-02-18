@@ -261,7 +261,6 @@ class TonRoll:
 			return wrapper
 		return decorator
 
-
 	@classmethod
 	def onlineChangedHandler(cls):
 		def decorator(func):
