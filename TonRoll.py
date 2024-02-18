@@ -43,6 +43,10 @@ class TonRoll:
 		)
 		return responce.json()
 
+	def loginIn(self, token: str):
+		self.operationName = "loginIn"
+		return self.__send_request({'token' : token})
+
 	def getServerTime(self):
 		self.operationName = "GetServerTime"
 		return self.__send_request()
