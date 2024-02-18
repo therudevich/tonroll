@@ -1,8 +1,9 @@
 import websockets
 import functools
 import requests
-import json
 import asyncio
+import json
+import uuid
 
 from .queries import queries, socket_queries
 
@@ -143,7 +144,7 @@ class TonRoll:
 	@classmethod
 	def rollGameStartHandler(cls):
 		def decorator(func):
-			event_id = "677214fe-d27f-4ba3-9176-11b0387c314b"
+			event_id = str(uuid.uuid4())
 			query = socket_queries['onRollGameUpdate']
 			variables = {}
 			extensions = {}
@@ -175,7 +176,7 @@ class TonRoll:
 	@classmethod
 	def rollNewGameHadler(cls):
 		def decorator(func):
-			event_id = "677214fe-d27f-4ba3-9176-11b0387c314b"
+			event_id = str(uuid.uuid4())
 			query = socket_queries['onRollGameUpdate']
 			variables = {}
 			extensions = {}
@@ -206,7 +207,7 @@ class TonRoll:
 	@classmethod
 	def rollGamesResultHistoryHandler(cls):
 		def decorator(func):
-			event_id = "5bce8c9f-de59-4458-ae09-551a9997ac8a"
+			event_id = str(uuid.uuid4())
 			query = socket_queries['onRollGamesResultHistoryUpdate']
 			variables = {}
 			extensions = {}
@@ -237,7 +238,7 @@ class TonRoll:
 	@classmethod
 	def chatNewMessageHandler(cls):
 		def decorator(func):
-			event_id = "a848b99d-3e47-4618-9409-216bdbcd82ac"
+			event_id = str(uuid.uuid4())
 			query = socket_queries['OnEventInChatRoom']
 			variables = {}
 			extensions = {}
@@ -268,7 +269,7 @@ class TonRoll:
 	@classmethod
 	def onlineChangedHandler(cls):
 		def decorator(func):
-			event_id = "a848b99d-3e47-4618-9409-216bdbcd82ac"
+			event_id = str(uuid.uuid4())
 			query = socket_queries['OnEventInChatRoom']
 			variables = {}
 			extensions = {}
@@ -287,6 +288,35 @@ class TonRoll:
 				'subscription_exists' : subscription_exists,
 				'path' : ['payload', 'data', 'chat', 'name'],
 				'typename' : 'onlineChanged',
+				'type' : 'subscribe'
+			})
+
+			@functools.wraps(func)
+			async def wrapper(*args, **kwargs):
+				return await func(*args, **kwargs)
+			return wrapper
+		return decorator
+
+	@classmethod
+	def onAuthHandler(cls, token):
+		def decorator(func):
+			event_id = str(uuid.uuid4())
+			query = socket_queries['onAuth']
+			variables = {'token' : token}
+			extensions = {}
+			subscription_exists = True
+			operationName = "onAuth"
+			if event_id not in cls.subscriptions:
+				cls.subscriptions[event_id] = []
+
+			cls.subscriptions[event_id].append({
+				'func' : func,
+				'query' : query,
+				'variables' : variables,
+				'operationName' : operationName,
+				'subscription_exists' : subscription_exists,
+				'path' : ['payload', 'data', 'auth', '__typename'],
+				'typename' : 'onUserAuthData',
 				'type' : 'subscribe'
 			})
 
