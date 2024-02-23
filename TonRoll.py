@@ -60,6 +60,10 @@ class TonRoll:
 		self.operationName = "getMe"
 		return self.__send_request()
 
+	def getDepositInfo(self, method: str, currency: str):
+		self.operationName = "GetDepositInfo"
+		return self.__send_request({'method' : method, 'currency' : currency})
+
 	def getDepositInfo(self):
 		self.operationName = "GetDepositInfo"
 		return self.__send_request()
